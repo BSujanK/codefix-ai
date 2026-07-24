@@ -1,0 +1,91 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>AutoCode — Results</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;600;700&family=IBM+Plex+Mono:wght@400;500&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
+</head>
+<body>
+
+  <header class="topbar">
+    <div class="topbar-left">
+      <a href="/" class="brand-mark">
+        <svg width="28" height="28" viewBox="0 0 36 36" fill="none">
+          <rect width="36" height="36" rx="8" fill="#3b82f6"/>
+          <path d="M10 18h4l3-6 4 12 3-6h2" stroke="#fff" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+        </svg>
+        <span class="brand-name">AutoCode</span>
+      </a>
+    </div>
+    <div class="topbar-right">
+      {% if provider_used %}
+      <span class="status-dot active"></span>
+      <span class="status-text">Fixed via {{ provider_used }}</span>
+      {% endif %}
+      <a href="/" class="topbar-link">← New analysis</a>
+    </div>
+  </header>
+
+  <div class="results-wrap">
+
+    <!-- Issues panel -->
+    <section class="results-issues">
+      <div class="issues-header">
+        <h2 class="issues-title">
+          {% set error_count = errors | selectattr('__contains__', 'defined') | list | length %}
+          Issues found
+          <span class="lang-tag">{{ language }}</span>
+        </h2>
+        {% if explanation %}
+        <p class="issues-explanation">{{ explanation }}</p>
+        {% endif %}
+      </div>
+      <ul class="issue-list">
+        {% for err in errors %}
+        <li class="issue-item {% if '✅' in err %}issue-ok{% elif 'Error' in err or 'error' in err %}issue-err{% else %}issue-warn{% endif %}">
+          <span class="issue-icon">
+            {% if '✅' in err %}✓{% elif 'Error' in err or 'error' in err %}✕{% else %}⚠{% endif %}
+          </span>
+          <span class="issue-text">{{ err }}</span>
+        </li>
+        {% endfor %}
+      </ul>
+    </section>
+
+    <!-- Code diff -->
+    <div class="diff-grid">
+      <section class="diff-panel">
+        <div class="diff-header">
+          <span class="diff-label original">Original</span>
+          <span class="diff-lines">{{ original_code.splitlines()|length }} lines</span>
+        </div>
+        <pre class="diff-code"><code>{{ original_code }}</code></pre>
+      </section>
+
+      <section class="diff-panel">
+        <div class="diff-header">
+          <span class="diff-label corrected">Corrected</span>
+          <div class="diff-actions">
+            <span class="diff-lines">{{ corrected_code.splitlines()|length }} lines</span>
+            {% if session_id %}
+            <a href="/download/{{ session_id }}" class="btn-download">
+              <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
+              Download
+            </a>
+            {% endif %}
+          </div>
+        </div>
+        <pre class="diff-code"><code>{{ corrected_code }}</code></pre>
+      </section>
+    </div>
+
+    <div class="results-footer">
+      <a href="/" class="btn-analyze">Analyze another file →</a>
+    </div>
+
+  </div>
+</body>
+</html>

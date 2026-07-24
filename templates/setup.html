@@ -1,0 +1,94 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>AutoCode — Connect Your AI</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;600;700&family=IBM+Plex+Mono:wght@400;500&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
+</head>
+<body class="setup-page">
+
+  <div class="setup-wrap">
+    <div class="setup-brand">
+      <div class="brand-mark">
+        <svg width="36" height="36" viewBox="0 0 36 36" fill="none">
+          <rect width="36" height="36" rx="8" fill="#3b82f6"/>
+          <path d="M10 18h4l3-6 4 12 3-6h2" stroke="#fff" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+        </svg>
+        <span class="brand-name">AutoCode</span>
+      </div>
+      <p class="setup-tagline">Connect your AI keys to start fixing code.</p>
+    </div>
+
+    {% if error %}
+    <div class="setup-error">{{ error }}</div>
+    {% endif %}
+
+    <form class="setup-form" action="/setup" method="POST">
+      <div class="provider-card primary-provider">
+        <div class="provider-header">
+          <span class="provider-label">Primary</span>
+          <span class="provider-name">Groq</span>
+          <span class="provider-badge">Fastest · Free tier</span>
+        </div>
+        <div class="field">
+          <label for="groq_key">Groq API Key</label>
+          <div class="input-wrap">
+            <input
+              type="password"
+              id="groq_key"
+              name="groq_api_key"
+              placeholder="gsk_..."
+              autocomplete="off"
+              spellcheck="false"
+            />
+            <button type="button" class="toggle-vis" data-target="groq_key" aria-label="Show key">
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/></svg>
+            </button>
+          </div>
+          <a class="get-key-link" href="https://console.groq.com/keys" target="_blank" rel="noopener">Get a free Groq key →</a>
+        </div>
+      </div>
+
+      <div class="provider-card secondary-provider">
+        <div class="provider-header">
+          <span class="provider-label">Fallback</span>
+          <span class="provider-name">OpenAI</span>
+          <span class="provider-badge">Used if Groq fails</span>
+        </div>
+        <div class="field">
+          <label for="openai_key">OpenAI API Key <span class="optional">(optional)</span></label>
+          <div class="input-wrap">
+            <input
+              type="password"
+              id="openai_key"
+              name="openai_api_key"
+              placeholder="sk-proj-..."
+              autocomplete="off"
+              spellcheck="false"
+            />
+            <button type="button" class="toggle-vis" data-target="openai_key" aria-label="Show key">
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/></svg>
+            </button>
+          </div>
+          <a class="get-key-link" href="https://platform.openai.com/api-keys" target="_blank" rel="noopener">Get an OpenAI key →</a>
+        </div>
+      </div>
+
+      <button type="submit" class="btn-connect">
+        Connect &amp; Start Fixing
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M5 12h14M12 5l7 7-7 7"/></svg>
+      </button>
+
+      <p class="security-note">
+        <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="11" width="18" height="11" rx="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/></svg>
+        Keys are stored in your browser session only — never logged, never saved to disk.
+      </p>
+    </form>
+  </div>
+
+  <script src="{{ url_for('static', filename='js/setup.js') }}"></script>
+</body>
+</html>

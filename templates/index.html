@@ -1,0 +1,152 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>AutoCode — Fix Your Code</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;600;700&family=IBM+Plex+Mono:wght@400;500&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
+</head>
+<body>
+
+  <!-- Top bar -->
+  <header class="topbar">
+    <div class="topbar-left">
+      <div class="brand-mark">
+        <svg width="28" height="28" viewBox="0 0 36 36" fill="none">
+          <rect width="36" height="36" rx="8" fill="#3b82f6"/>
+          <path d="M10 18h4l3-6 4 12 3-6h2" stroke="#fff" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+        </svg>
+        <span class="brand-name">AutoCode</span>
+      </div>
+    </div>
+    <div class="topbar-right">
+      {% if keys_ok %}
+      <span class="status-dot active"></span>
+      <span class="status-text">AI connected</span>
+      <a href="/clear-keys" class="topbar-link">Change keys</a>
+      {% else %}
+      <span class="status-dot inactive"></span>
+      <span class="status-text">No AI key</span>
+      <a href="/setup" class="topbar-link accent">Connect AI →</a>
+      {% endif %}
+    </div>
+  </header>
+
+  <main class="editor-layout">
+
+    <!-- Left: input panel -->
+    <section class="panel input-panel">
+      <form action="/analyze" method="POST" enctype="multipart/form-data" id="analyze-form">
+
+        <div class="panel-toolbar">
+          <select name="language" id="language" class="lang-select">
+            <option value="python">Python</option>
+            <option value="javascript">JavaScript</option>
+            <option value="typescript">TypeScript</option>
+            <option value="java">Java</option>
+            <option value="c">C</option>
+            <option value="cpp">C++</option>
+            <option value="csharp">C#</option>
+            <option value="go">Go</option>
+            <option value="ruby">Ruby</option>
+            <option value="php">PHP</option>
+            <option value="swift">Swift</option>
+            <option value="kotlin">Kotlin</option>
+            <option value="rust">Rust</option>
+            <option value="sql">SQL</option>
+          </select>
+
+          <label class="upload-btn" for="file-input">
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="17 8 12 3 7 8"/><line x1="12" y1="3" x2="12" y2="15"/></svg>
+            Upload file
+            <input type="file" id="file-input" name="file" accept=".py,.js,.ts,.jsx,.tsx,.java,.c,.cpp,.cs,.go,.rb,.php,.swift,.kt,.rs,.html,.css,.sql,.sh,.txt" style="display:none"/>
+          </label>
+
+          <span class="file-name" id="file-name"></span>
+        </div>
+
+        <div class="code-editor-wrap">
+          <textarea
+            name="code"
+            id="code-input"
+            class="code-editor"
+            placeholder="// Paste your code here and click Analyze →"
+            spellcheck="false"
+            maxlength="20000"
+          ></textarea>
+          <div class="scan-line" id="scan-line"></div>
+        </div>
+
+        <div class="panel-footer">
+          <span class="char-count" id="char-count">0 / 20,000</span>
+          <button type="submit" class="btn-analyze" id="analyze-btn" {% if not keys_ok %}disabled title="Connect an AI key first"{% endif %}>
+            <span class="btn-text">Analyze &amp; Fix</span>
+            <span class="btn-spinner" hidden>
+              <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" class="spin"><path d="M12 2v4M12 18v4M4.93 4.93l2.83 2.83M16.24 16.24l2.83 2.83M2 12h4M18 12h4M4.93 19.07l2.83-2.83M16.24 7.76l2.83-2.83"/></svg>
+              Analyzing...
+            </span>
+          </button>
+        </div>
+
+      </form>
+    </section>
+
+    <!-- Right: info panel -->
+    <aside class="panel info-panel">
+      <div class="info-inner">
+        <div class="info-hero">
+          <div class="pulse-ring">
+            <svg width="48" height="48" viewBox="0 0 48 48" fill="none">
+              <circle cx="24" cy="24" r="20" stroke="#3b82f620" stroke-width="8"/>
+              <path d="M14 24h5l4-8 5 16 4-8h2" stroke="#3b82f6" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"/>
+            </svg>
+          </div>
+          <h1 class="info-title">Self-Correcting<br/>Code Analyzer</h1>
+          <p class="info-desc">Paste broken code. Get clean code back — with a list of every issue fixed.</p>
+        </div>
+
+        <div class="provider-chain">
+          <div class="chain-step {% if keys_ok %}active{% endif %}">
+            <div class="chain-icon groq-icon">G</div>
+            <div class="chain-info">
+              <span class="chain-name">Groq</span>
+              <span class="chain-role">Primary · llama-3.3-70b</span>
+            </div>
+            <span class="chain-arrow">→</span>
+          </div>
+          <div class="chain-step">
+            <div class="chain-icon openai-icon">O</div>
+            <div class="chain-info">
+              <span class="chain-name">OpenAI</span>
+              <span class="chain-role">Fallback · gpt-4o-mini</span>
+            </div>
+            <span class="chain-arrow">→</span>
+          </div>
+          <div class="chain-step">
+            <div class="chain-icon local-icon">L</div>
+            <div class="chain-info">
+              <span class="chain-name">Local</span>
+              <span class="chain-role">Python only · autopep8</span>
+            </div>
+          </div>
+        </div>
+
+        <div class="lang-pills">
+          {% for lang in ["Python","JS","TS","Java","C","C++","Go","Rust","PHP","SQL"] %}
+          <span class="lang-pill">{{ lang }}</span>
+          {% endfor %}
+        </div>
+
+        {% if not keys_ok %}
+        <a href="/setup" class="btn-setup-cta">Connect AI keys to start →</a>
+        {% endif %}
+      </div>
+    </aside>
+
+  </main>
+
+  <script src="{{ url_for('static', filename='js/editor.js') }}"></script>
+</body>
+</html>
